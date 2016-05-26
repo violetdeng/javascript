@@ -85,9 +85,14 @@ TurningCounting.prototype = {
                 that.$rotateBottom.css("transform", "rotateX(270deg)");
 
                 that.running = false;
+                that._change();
                 if (that.loop) that._init();
             }
         }, 100);
+    },
+    change: function () {},
+    _change: function () {
+        this.change.call(this);
     },
     trigger: function () {},
     _trigger: function () {
@@ -98,7 +103,7 @@ TurningCounting.prototype = {
     _init: function () {
         this.running = true;
         this.number ++;
-        if (this.number == this.maxNumber) {
+        if (this.number >= this.maxNumber) {
             this._trigger();
             this.number = 0;
         }
@@ -118,8 +123,116 @@ TurningCounting.prototype = {
     },
     stop: function () {
         this.loop = false;
+    },
+    setNumber: function (number) {
+        this.number = number;
+    },
+    setMaxNumber: function (number) {
+        this.maxNumber = number;
+        if (this.number > number) {
+            this.number = 0;
+        }
     }
 };
 
 global.TurningCounting = TurningCounting;
+
+function Clock (element) {
+    this.$element = $(element);
+    this._init();
+}
+Clock.prototype = {
+    constructor: Clock,
+    _init: function () {
+        var date = this._getCurrentTime();
+        var second = date.second,
+            minute = date.minute,
+            hour = date.hour;
+        var that = this,
+            $element = this.$element;
+        this.secondBit = new TurningCounting($element.find(".second-bit"), {
+            number: second[1] || second[0],
+            trigger: function () {
+                that.secondTen.start();
+            }
+        });
+        this.secondTen = new TurningCounting($element.find(".second-ten"), {
+            number: second[1] ? second[0] : 0,
+            maxNumber: 6,
+            loop: false,
+            trigger: function () {
+                that.minuteBit.start();
+                if (this.number == 5) {
+                    // 没分钟修正一次时间
+                    that._fixed();
+                }
+            }
+        });
+        this.minuteBit = new TurningCounting($element.find(".minute-bit"), {
+            number: minute[1] || minute[0],
+            loop: false,
+            trigger: function () {
+                that.minuteTen.start();
+            }
+        });
+        this.minuteTen = new TurningCounting($element.find(".minute-ten"), {
+            number: minute[1] ? minute[0] : 0,
+            maxNumber: 6,
+            loop: false,
+            trigger: function () {
+                that.hourBit.start();
+            }
+        });
+        this.hourBit = new TurningCounting($element.find(".hour-bit"), {
+            number: hour[1] || hour[0],
+            maxNumber: date.maxFixed ? 4 : 10,
+            loop: false,
+            trigger: function () {
+                that.hourTen.start();
+            }
+        });
+        this.hourTen = new TurningCounting($element.find(".hour-ten"), {
+            number: hour[1] ? hour[0] : 0,
+            maxNumber: 2,
+            loop: false,
+            change: function () {
+                if (this.number == 2) {
+                    that.hourBit.setMaxNumber(4);
+                } else {
+                    that.hourBit.setMaxNumber(10);
+                }
+            }
+        });
+    },
+    _getCurrentTime: function () {
+        var date = new Date();
+        return {
+            "second": ("" + date.getSeconds()).split(""),
+            "minute": ("" + date.getMinutes()).split(""),
+            "hour": ("" + date.getHours()).split(""),
+            "maxFixed": date.getHours() > 19 ? true : false
+        };
+    },
+    _fixed: function () {
+        var date = this._getCurrentTime();
+        var second = date.second,
+            minute = date.minute;
+        this.secondBit.setNumber(second[1] || second[0]);
+        this.secondTen.setNumber(second[1] ? second[0] : 0);
+        this.minuteBit.setNumber(minute[1] || minute[0]);
+        this.minuteTen.setNumber(minute[1] ? minute[0] : 0);
+    },
+    getTime: function () {
+        return {
+            "hour": parseInt("" + this.hourTen.number + this.hourBit.number),
+            "minute": parseInt("" + this.minuteTen.number + this.minuteBit.number),
+            "second": parseInt("" + this.secondTen.number + this.secondBit.number)
+        };
+    },
+    start: function () {
+        this.secondBit.start();
+    }
+};
+
+global.Clock = Clock;
 })(this);
