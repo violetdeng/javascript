@@ -1,0 +1,71 @@
+{
+    "elements": [{
+        "label": {
+            "text": "Text Input"
+        },
+        "elements": [{
+            "name": "text_input"
+        }]
+    }, {
+        "label": {
+            "text": "Checkbox Input"
+        },
+        "elements": [{
+            "type": "checkbox",
+            "name": "checkbox[]",
+            "value": "1",
+            "label": "Checkbox One"
+        }, {
+            "type": "checkbox",
+            "name": "checkbox[]",
+            "value": "2",
+            "label": "Checkbox Two"
+        }]
+    }, {
+        "label": {
+            "text": "Radio Input"
+        },
+        "elements": [{
+            "type": "radio",
+            "name": "radio[]",
+            "value": "1",
+            "label": "Radio One"
+        }, {
+            "type": "radio",
+            "name": "radio[]",
+            "value": "2",
+            "label": "Radio Two"
+        }]
+    }, {
+        "label": {
+            "text": "Select"
+        },
+        "elements": [{
+            "type": "select",
+            "name": "select",
+            "options": [{
+                "value": "1",
+                "title": "Select One"
+            }, {
+                "value": "2",
+                "title": "Select Two",
+                "selected": true
+            }]
+        }]
+    }, {
+        "label": {
+            "text": "Textarea"
+        },
+        "elements": [{
+            "name": "textarea",
+            "type": "textarea",
+            "value": "Textarea Value Test"
+        }]
+    }, {
+        "elements": [{
+            "type": "button",
+            "className": "btn btn-default",
+            "text": "Button"
+        }]
+    }]
+}
