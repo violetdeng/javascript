@@ -30,6 +30,7 @@ function TurningCounting (element, options) {
         this.maxNumber = options.maxNumber || this.maxNumber;
         this.loop = options.loop !== undefined ? options.loop : this.loop;
         this.trigger = options.trigger !== undefined ? options.trigger : this.trigger;
+        this.change = options.change !== undefined ? options.change : this.change;
     }
 
     this.$rotateTop.text(this.number);
@@ -160,12 +161,14 @@ Clock.prototype = {
             number: second[1] ? second[0] : 0,
             maxNumber: 6,
             loop: false,
-            trigger: function () {
-                that.minuteBit.start();
+            change: function () {
                 if (this.number == 5) {
-                    // 没分钟修正一次时间
+                    // 每分钟修正一次时间
                     that._fixed();
                 }
+            },
+            trigger: function () {
+                that.minuteBit.start();
             }
         });
         this.minuteBit = new TurningCounting($element.find(".minute-bit"), {
