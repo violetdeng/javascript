@@ -27,6 +27,7 @@ function TurningCounting (element, options) {
 
     if (options) {
         this.number = options.number || 0;
+        this.nextNumber = this.number;
         this.maxNumber = options.maxNumber || this.maxNumber;
         this.loop = options.loop !== undefined ? options.loop : this.loop;
         this.trigger = options.trigger !== undefined ? options.trigger : this.trigger;
@@ -41,7 +42,8 @@ function TurningCounting (element, options) {
 
 TurningCounting.prototype = {
     constructor: TurningCounting,
-    number: null,
+    number: 0,
+    nextNumber: 0,
     maxNumber: 10,
     loop: true,
     running: false,
@@ -103,10 +105,11 @@ TurningCounting.prototype = {
     $fixedBottom: null,
     _init: function () {
         this.running = true;
-        this.number ++;
+        this.nextNumber ++;
+        this.number = this.nextNumber;
         if (this.number >= this.maxNumber) {
             this._trigger();
-            this.number = 0;
+            this.nextNumber = this.number = 0;
         }
         this.$fixedTop.text(this.number);
         this._initRotateTop();
@@ -126,7 +129,7 @@ TurningCounting.prototype = {
         this.loop = false;
     },
     setNumber: function (number) {
-        this.number = number;
+        this.nextNumber = number;
     },
     setMaxNumber: function (number) {
         this.maxNumber = number;
@@ -218,12 +221,18 @@ Clock.prototype = {
     },
     _fixed: function () {
         var date = this._getCurrentTime();
-        var second = date.second,
-            minute = date.minute;
-        this.secondBit.setNumber(second[1] || second[0]);
-        this.secondTen.setNumber(second[1] ? second[0] : 0);
-        this.minuteBit.setNumber(minute[1] || minute[0]);
-        this.minuteTen.setNumber(minute[1] ? minute[0] : 0);
+        var secondBit = date.second[1] || date.second[0],
+            secondTen = date.second[1] ? date.second[0] : 0,
+            minuteBit = date.minute[1] || date.minute[0],
+            minuteTen = date.minute[1] ? date.minute[0] : 0,
+            hourBit = date.hour[1] || date.hour[0],
+            hourTen = date.hour[1] ? date.hour[0] : 0;
+        if (this.hourTen.number != hourTen) this.hourTen.setNumber(hourTen);
+        if (this.hourBit.number != hourBit) this.hourBit.setNumber(hourBit);
+        if (this.minuteTen.number != minuteTen) this.minuteTen.setNumber(minuteTen);
+        if (this.minuteBit.number != minuteBit) this.minuteBit.setNumber(minuteBit);
+        if (this.secondTen.nextNumber < secondTen) this.secondTen.setNumber(secondTen);
+        if (this.secondBit.nextNumber < secondBit) this.secondBit.setNumber(secondBit);
     },
     getTime: function () {
         return {
