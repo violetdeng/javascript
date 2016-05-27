@@ -1,0 +1,172 @@
+(function () {
+
+function createElement (tagName, attributes) {
+    var ele = document.createElementNS("http://www.w3.org/2000/svg", tagName),
+        i;
+    if (attributes) {
+        for (i in attributes) {
+            if (attributes.hasOwnProperty(i)) {
+                ele.setAttribute(i, attributes[i]);
+            }
+        }
+    }
+    return ele;
+}
+
+function createSvg (size) {
+    var svg = createElement("svg");
+    svg.setAttribute("width", size);
+    svg.setAttribute("height", size);
+    return svg;
+}
+
+function createPath (points, color, fill) {
+    var path = createElement("path"),
+        i, d = [];
+    fill = fill === undefined ? true : fill;
+    d.push("M " + points[0][0] + ", " + points[0][1]);
+    for (i = 1; i < points.length; i ++) {
+        d.push("L " + points[i][0] + ", " + points[i][1]);
+    }
+    path.setAttribute("d", d.join(" "));
+    path.setAttribute("style", "fill: " + color + "; stroke: " + color);
+    return path;
+}
+
+function createIcon (size, paths, color) {
+    var svg = createSvg(size),
+        i;
+    for (i = 0; i < paths.length; i ++) {
+        svg.appendChild(createPath(paths[i], color));
+    }
+    return svg;
+}
+
+function createMinus (size, color) {
+    var one = size / 2 - 2,
+        two = size / 2 + 2;
+    return createIcon(size, [[
+        [0, one],
+        [size, one],
+        [size, two],
+        [0, two],
+        [0, one]
+    ]], color);
+}
+
+function createPlus (size, color) {
+    var one = size / 2 - 2,
+        two = size / 2 + 2;
+    return createIcon(size, [[
+        [0, one],
+        [size, one],
+        [size, two],
+        [0, two],
+        [0, one]
+    ], [
+        [one, 0],
+        [one, size],
+        [two, size],
+        [two, 0],
+        [one, 0]
+    ]], color);
+}
+
+function createCross (size, color) {
+    var one = 3.5,
+        two = size - one;
+    return createIcon(size, [[
+        [one, 0],
+        [size, two],
+        [two, size],
+        [0, one]
+    ], [
+        [size, one],
+        [one, size],
+        [0, two],
+        [two, 0]
+    ]], color);
+}
+
+function createTriangle (size, color) {
+    var one = size / 2;
+    return createIcon(size, [[
+        [0, one],
+        [size, one],
+        [one, size],
+        [0, one]
+    ]], color);
+}
+
+function createStar (size, color) {
+    var one = size / 2,
+        two = one * Math.sin(18 * 0.017453293),
+        three = one * Math.cos(18 * 0.017453293),
+        four = one * Math.sin(54 * 0.017453293),
+        five = one * Math.cos(54 * 0.017453293),
+        six = two * Math.tan(36 * 0.017453293),
+        seven = two / Math.cos(36 * 0.017453293),
+        eight = seven * Math.sin(18 * 0.017453293),
+        nine = seven * Math.cos(18 * 0.017453293);
+    return createIcon(size, [[
+        [one, 0],
+        [one + six, one - two],
+        [three + one, one - two],
+        [one + nine, one + eight],
+        [five + one, one + four],
+        [one, one + seven],
+        [one - five, one + four],
+        [one - nine, one + eight],
+        [one - three, one - two],
+        [one - six, one - two],
+        [one, 0]
+    ]], color);
+}
+
+function createSearch (size, color) {
+    var svg = createSvg(size),
+        width = 2,
+        one = size / 2 - width,
+        two = one - width * 2,
+        three = one * Math.cos(50 * 0.017453293),
+        four = one * Math.sin(50 * 0.017453293),
+        five = size - width;
+    svg.appendChild(createElement("circle", {
+        "cx": one,
+        "cy": one,
+        "r": one - 1,
+        "style": "stroke: " + color + "; fill: " + color
+    }));
+    svg.appendChild(createElement("circle", {
+        "cx": one,
+        "cy": one,
+        "r": two,
+        "style": "stroke: " + color + "; fill: white"
+    }));
+    svg.appendChild(createPath([
+        [one + three, one + four - width],
+        [size, five],
+        [five, size],
+        [one + three - width, one + four]
+    ], color));
+    return svg;
+}
+
+var minus = createMinus(24, "#555");
+document.getElementsByTagName("body")[0].appendChild(minus);
+
+var plus = createPlus(24, "#555");
+document.getElementsByTagName("body")[0].appendChild(plus);
+
+var cross = createCross(24, "#555");
+document.getElementsByTagName("body")[0].appendChild(cross);
+
+var triangle = createTriangle(24, "#555");
+document.getElementsByTagName("body")[0].appendChild(triangle);
+
+var star = createStar(24, "#555");
+document.getElementsByTagName("body")[0].appendChild(star);
+
+var search = createSearch(24, "#555");
+document.getElementsByTagName("body")[0].appendChild(search);
+})();
