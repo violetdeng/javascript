@@ -155,7 +155,7 @@ Supperzzle.prototype = {
     }
 };
 
-var container = $(".game-container>ul"),
+var container = $(".game-container ul"),
     last;
 
 var blocks = [],

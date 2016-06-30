@@ -52,11 +52,25 @@
         .example-nav { margin-bottom: 0; background-color: #FFF; border-bottom: 0; }
         .example-nav .navbar-brand { font-weight: 500; color: violet; }
 
-        .example-body { background: url(./bg.jpg) no-repeat center; padding: 80px 0; }
-        .example-body-bg { background-color: #FFF; }
+        .example-body { background: url(./bg.jpg) no-repeat center; }
+        @media (min-width: 768px) {
+            .example-body { padding: 15px 0; }
+        }
+        @media (min-width: 992px) {
+            .example-body { padding: 30px 0; }
+        }
+        @media (min-width: 1200px) {
+            .example-body { padding: 80px 0; }
+        }
 
-        .container { position: relative; padding: 30px 0; }
-        .game-container { width: 400px; margin: 0 auto; padding: 20px; background-color: #EEE; }
+        .example-body .container { position: relative; padding: 0; }
+        .game-container { background-color: #EEE; }
+        @media (max-width: 376px) {
+            .game-container { padding: 7px; }
+        }
+        @media (min-width: 376px) {
+            .game-container .wrapper { width: 360px; margin: 0 auto; }
+        }
         .game-container ul { margin: 0; padding: 0; list-style: none; position: relative; width: 360px; height: 360px; }
         .game-container ul li { width: 58px; height: 58px; text-align: center; line-height: 58px; position: absolute; border: 1px solid #FFF; background-size: contain; background-repeat: no-repeat; background-position: center; background-color: #FFF; }
         .red { background-image: url("red.jpg"); }
@@ -66,8 +80,6 @@
         .green { background-image: url("green.jpg"); }
         .black { background-image: url("black.jpg"); }
         .purple { background-image: url("purple.jpg"); }
-        .game-score { line-height: 60px; vertical-align: middle; }
-        .game-score b { font-size: 60px; }
     </style>
 </head>
 <body>
@@ -77,14 +89,18 @@
         </div>
     </header>
     <main class="example-body">
-        <div class="container example-body-bg">
-            <div class="row" id="J_playGameContainer">
-                <div class="col-md-2 pull-right game-score">
-                    得分：<b>0</b>
-                </div>
-                <div class="col-md-10">
-                    <div class="game-container">
-                        <ul></ul>
+        <div class="container">
+            <div id="J_playGameContainer">
+                <div class="panel panel-default">
+                    <div class="panel-heading">
+                        <div class="game-score">
+                            得分：<b>0</b>
+                        </div>
+                    </div>
+                    <div class="panel-body game-container">
+                        <div class="wrapper">
+                            <ul></ul>
+                        </div>
                     </div>
                 </div>
             </div>
