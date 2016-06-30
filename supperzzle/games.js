@@ -111,12 +111,15 @@ Block.prototype = {
     _create: function () {
         var that = this;
         this.$element = $("<li>");
-        this.$element.on("mousedown", function () {
-            change(that, true);
+        this.$element.on("click", function () {
+            change(that);
         });
-        this.$element.on("mouseup", function () {
-            change(that, false);
-        });
+        //this.$element.on("mousedown", function () {
+            //change(that, true);
+        //});
+        //this.$element.on("mouseup", function () {
+            //change(that, false);
+        //});
     },
     show: function () {
         $(this.options.container).append(this.$element);
@@ -420,14 +423,14 @@ function change (block, first) {
             "left": tmp[1] * 60
         }, 30);
     }
-    if (first) {
-        if (CHANGE.length) {
-            CHANGE[0].removeHint();
-        }
-        block.setHint();
-        CHANGE[0] = block;
-        return;
-    }
+    //if (first) {
+        //if (CHANGE.length) {
+            //CHANGE[0].removeHint();
+        //}
+        //block.setHint();
+        //CHANGE[0] = block;
+        //return;
+    //}
     if (block.isHint()) {
         CHANGE = [];
         block.removeHint();
@@ -461,6 +464,8 @@ function change (block, first) {
             block.removeHint();
         } 
         CHANGE = [];
+    } else {
+        CHANGE[0] = block;
     }
 }
 
