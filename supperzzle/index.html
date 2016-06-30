@@ -48,28 +48,53 @@
     <link rel="stylesheet" href="../bootstrap-3.3.6-dist/css/bootstrap.min.css" />
     <script src="../jquery-1.10.1.min.js"></script>
     <style type="text/css">
-        .container { position: relative; }
-        .game-container { width: 420px; margin: 0 auto; }
-        .game-container ul { margin: 0; padding: 0; list-style: none; position: relative; width: 420px; height: 420px; }
-        .game-container ul li { width: 58px; height: 58px; text-align: center; line-height: 58px; position: absolute; border: 1px solid #FFF; }
-        .game-score { position: absolute; top: 10px; right: 100px; line-height: 60px; vertical-align: middle; }
+        div { -webkit-user-select: none; }
+        .example-nav { margin-bottom: 0; background-color: #FFF; border-bottom: 0; }
+        .example-nav .navbar-brand { font-weight: 500; color: violet; }
+
+        .example-body { background: url(./bg.jpg) no-repeat center; padding: 80px 0; }
+        .example-body-bg { background-color: #FFF; }
+
+        .container { position: relative; padding: 30px 0; }
+        .game-container { width: 400px; margin: 0 auto; padding: 20px; background-color: #EEE; }
+        .game-container ul { margin: 0; padding: 0; list-style: none; position: relative; width: 360px; height: 360px; }
+        .game-container ul li { width: 58px; height: 58px; text-align: center; line-height: 58px; position: absolute; border: 1px solid #FFF; background-size: contain; background-repeat: no-repeat; background-position: center; background-color: #FFF; }
+        .red { background-image: url("red.jpg"); }
+        .orange { background-image: url("orange.jpg"); }
+        .blue { background-image: url("blue.jpg"); }
+        .yellow { background-image: url("yellow.jpg"); }
+        .green { background-image: url("green.jpg"); }
+        .black { background-image: url("black.jpg"); }
+        .purple { background-image: url("purple.jpg"); }
+        .game-score { line-height: 60px; vertical-align: middle; }
         .game-score b { font-size: 60px; }
     </style>
 </head>
 <body>
-    <div class="container">
-        <div id="J_playGameContainer">
-            <div class="game-container">
-                <ul></ul>
+    <header class="navbar navbar-static-top example-nav">
+        <div class="container">
+            <div class="navbar-header"><a href="/" class="navbar-brand">Violet</a></div>
+        </div>
+    </header>
+    <main class="example-body">
+        <div class="container example-body-bg">
+            <div class="row" id="J_playGameContainer">
+                <div class="col-md-2 pull-right game-score">
+                    得分：<b>0</b>
+                </div>
+                <div class="col-md-10">
+                    <div class="game-container">
+                        <ul></ul>
+                    </div>
+                </div>
             </div>
-            <div class="game-score">
-                得分：<b>0</b>
+            <div class="row">
+                <div class="" id="J_gameResultContainer">
+                    <b></b>
+                </div>
             </div>
         </div>
-        <div id="J_gameResultContainer">
-            <b></b>
-        </div>
-    </div>
+    </main>
     <script src="games.js"></script>
 </body>
 </html>

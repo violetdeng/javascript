@@ -1,4 +1,10 @@
-var COLORS = ["black", "red", "orange", /*"yellow", */"green", "blue", "purple"];
+var CLASSES = ["black", "red", "orange", "yellow", "green", "blue", "purple"];
+
+function getRandom () {
+    var rand = Math.random();   
+    return Math.abs(Math.round(rand * 6) - 1);
+}
+
 function Block (options) {
     this.options = $.extend({}, this.options, options);
     this.setPosition(options.x, options.y);
@@ -110,7 +116,7 @@ Block.prototype = {
         });
     },
     show: function () {
-        this.$element.text(this.options.flag);
+        //this.$element.text(this.options.flag);
         $(this.options.container).append(this.$element);
         return this;
     },
@@ -174,10 +180,9 @@ for (var i = 0; i < size; i ++) {
         last = blocks[i][j];
         blocks[i][j].show();
         blocks[i][j].$element.css({
-            "color": COLORS[flag],
             "top": i * 60,
             "left": j * 60
-        });
+        }).addClass(CLASSES[flag]);
     }
 }
 // 横向
@@ -228,10 +233,6 @@ function judgeY () {
         }
     }
     return results;
-}
-
-function getRandom () {
-    return Math.abs(Math.floor(Math.random() * 10 - 1));
 }
 
 function judge () {
@@ -297,10 +298,9 @@ function judge () {
                 flag = getRandom();
                 blocks[j][i] = (new Block({ flag: flag, container: container, x: j, y: i})).show();
                 blocks[j][i].$element.css({
-                    "color": COLORS[flag],
                     "top": 0,
                     "left": i * 60
-                });
+                }).addClass(CLASSES[flag]);
             }
             if (j > 0) {
                 blocks[j][i].setTop(blocks[j-1][i]);
