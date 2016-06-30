@@ -111,12 +111,14 @@ Block.prototype = {
     _create: function () {
         var that = this;
         this.$element = $("<li>");
-        this.$element.on("click", function () {
-            change(that);
+        this.$element.on("mousedown", function () {
+            change(that, true);
+        });
+        this.$element.on("mouseup", function () {
+            change(that, false);
         });
     },
     show: function () {
-        //this.$element.text(this.options.flag);
         $(this.options.container).append(this.$element);
         return this;
     },
@@ -330,7 +332,7 @@ function judge () {
 }
 
 var CHANGE = [];
-function change (block) {
+function change (block, first) {
     function ex (block) {
         var tmp;
         if (block.hasTop()) {
@@ -418,6 +420,14 @@ function change (block) {
             "left": tmp[1] * 60
         }, 30);
     }
+    if (first) {
+        if (CHANGE.length) {
+            CHANGE[0].removeHint();
+        }
+        block.setHint();
+        CHANGE[0] = block;
+        return;
+    }
     if (block.isHint()) {
         CHANGE = [];
         block.removeHint();
@@ -451,8 +461,6 @@ function change (block) {
             block.removeHint();
         } 
         CHANGE = [];
-    } else {
-        CHANGE.push(block);
     }
 }
 
