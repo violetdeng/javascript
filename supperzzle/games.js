@@ -1,5 +1,4 @@
 var COLORS = ["black", "red", "orange", /*"yellow", */"green", "blue", "purple"];
-
 function Block (options) {
     this.options = $.extend({}, this.options, options);
     this.setPosition(options.x, options.y);
@@ -158,10 +157,10 @@ var blocks = [],
     flag;
 
 // fill
-for (var i = 0; i <= size; i ++) {
+for (var i = 0; i < size; i ++) {
     blocks[i] = [];
     last = null;
-    for (var j = 0; j <= size; j ++) {
+    for (var j = 0; j < size; j ++) {
         flag = getRandom();
         blocks[i][j] = (new Block({ flag: flag, container: container, x: i, y: j}));
         if (last) {
@@ -185,10 +184,10 @@ for (var i = 0; i <= size; i ++) {
 function judgeX () {
     var results = [],
         same, block, last;
-    for (var i = 0; i <= size; i ++) {
+    for (var i = 0; i < size; i ++) {
         last = null;
         same = [];
-        for (var j = 0; j <= size; j ++) {
+        for (var j = 0; j < size; j ++) {
             block = blocks[i][j];
             if (null !== last && last != block.getFlag()) {
                 if (same.length >= 3) {
@@ -210,10 +209,10 @@ function judgeX () {
 function judgeY () {
     var results = [],
         block, same, last;
-    for (var i = 0; i <= size; i ++) {
+    for (var i = 0; i < size; i ++) {
         last = null;
         same = [];
-        for (var j = 0; j <= size; j ++) {
+        for (var j = 0; j < size; j ++) {
             block = blocks[j][i];
             if (null !== last && last != block.getFlag()) {
                 if (same.length >= 3) {
@@ -291,9 +290,9 @@ function judge () {
     }
 
     var flag;
-    for (i = 0; i <= size; i ++) {
-        fillY(size, i);
-        for (j = 0; j <= size; j ++) {
+    for (i = 0; i < size; i ++) {
+        fillY(size - 1, i);
+        for (j = 0; j < size; j ++) {
             if (null === blocks[j][i]) {
                 flag = getRandom();
                 blocks[j][i] = (new Block({ flag: flag, container: container, x: j, y: i})).show();
@@ -311,9 +310,9 @@ function judge () {
         blocks[0][i].removeTop();
     }
 
-    for (i = size; i >= 0; i --) {
-        for (j = size; j >= 0; j --) {
-            if (j == size) {
+    for (i = size - 1; i >= 0; i --) {
+        for (j = size - 1; j >= 0; j --) {
+            if (j == size -1) {
                 blocks[i][j].removeRight();
             } else {
                 blocks[i][j].setRight(blocks[i][j+1]);
@@ -434,7 +433,7 @@ function change (block) {
             // 交换位置
             ex(block);
             ey(block);
-            if (dismiss() <= 0) {
+            if (dismiss(true) <= 0) {
                 tmp = CHANGE[0];
                 CHANGE = [];
                 CHANGE.push(block);
@@ -506,6 +505,168 @@ function dismiss (once) {
         score += tmp;
     }
     $(".game-score b").text(score);
+    if (!isX() && !isY()) {
+        if (confirm("已经没有可以消除的项目啦，是否重新排序？")) {
+            shuffle();
+            dismiss();
+        } else {
+            $("#J_playGameContainer").hide();
+            $("#J_gameResultContainer").find("b").text("游戏结束，您的得分是：" + score).end().show();
+        }
+    }
+}
+
+function shuffle () {
+    var tmp, tmpi, tmpj, pos;
+    for (var i = 0; i < size; i ++) {
+        for (var j = 0; j < size; j ++) {
+            tmpi = getRangeRandom(size - 1);
+            tmpj = getRangeRandom(size - 1);
+            tmp = blocks[tmpi][tmpj];
+
+            blocks[tmpi][tmpj] = blocks[i][j];
+            blocks[tmpi][tmpj].setPosition(tmpi, tmpj);
+            blocks[tmpi][tmpj].$element.animate({
+                "top": tmpi * 60,
+                "left": tmpj* 60
+            }, 10);
+            blocks[i][j] = tmp;
+            blocks[i][j].setPosition(i, j);
+            blocks[i][j].$element.animate({
+                "top": i * 60,
+                "left": j * 60
+            }, 10);
+        }
+    }
+}
+
+function getRangeRandom (range) {
+    var rand = Math.random();   
+    return Math.round(rand * range);  
 }
 
 dismiss();
+
+/**
+ * 横向
+ * 处理的情况包括：
+ *   ** *  ||  * ** 
+ *   --------------
+ *   *     ||    *
+ *    **   ||  **
+ *   --------------
+ *   **    ||   **
+ *     *   ||  *
+ *   --------------
+ *   * *   ||   *
+ *    *    ||  * *
+ */
+function isX () {
+    for (var i = 0; i < size; i ++) {
+        for (var j = 0; j < size - 1; j ++) {
+            if (blocks[i][j].getFlag() == blocks[i][j+1].getFlag()) {
+                //    ?
+                //  **
+                //    ?
+                if (i - 1 >= 0 && j + 2 < size && 
+                    blocks[i-1][j+2].getFlag() == blocks[i][j].getFlag()) {
+                    return true;
+                }
+                if (i + 1 < size && j + 2 < size &&
+                    blocks[i+1][j+2].getFlag() == blocks[i][j].getFlag()) {
+                    return true;
+                }
+
+                //  ? ** ?
+                if (j - 2 >= 0 && blocks[i][j-2].getFlag() == blocks[i][j].getFlag()) {
+                    return true;
+                }
+                if (j + 3 < size && blocks[i][j+3].getFlag() == blocks[i][j].getFlag()) {
+                    return true;
+                }
+            }
+        }
+
+        //  * *  |   *
+        //   *   |  * *
+        for (j = 0; j < size -2; j ++) {
+            if (blocks[i][j].getFlag() == blocks[i][j+2].getFlag()) {
+                if (i - 1 >= 0 && blocks[i][j].getFlag() == blocks[i-1][j+1].getFlag()) {
+                    return true;
+                }
+                if (i + 1 < size && blocks[i][j].getFlag() == blocks[i+1][j+1].getFlag()) {
+                    return true;
+                }
+            }
+        }
+    }
+    return false;
+}
+
+/**
+ * 纵向
+ * 处理的情况包括：
+ *   *   ||   *  ||  *   ||   *
+ *   *   ||   *  ||   *  ||  *
+ *    *  ||  *   ||   *  ||  *
+ *   --------------------------
+ *   *   ||   *
+ *    *  ||  *
+ *   *   ||   *
+ */
+function isY () {
+    for (var j = 0; j < size; j ++) {
+        for (var i = 0; i < size - 1; i ++) {
+            if (blocks[i][j].getFlag() == blocks[i+1][j].getFlag()) {
+                //   *
+                //   *
+                //  ? ?
+                if (j - 1 > 0 && i + 2 < size &&
+                    blocks[i+2][j-1].getFlag() == blocks[i][j].getFlag()) {
+                    return true;
+                }
+                if (j + 1 < size && i + 2 < size &&
+                    blocks[i+2][j+1].getFlag() == blocks[i][j].getFlag()) {
+                    return true;
+                }
+
+                //  ? ?
+                //   *
+                //   *
+                if (j - 1 >= 0 && i - 1 >= 0 &&
+                    blocks[i-1][j-1].getFlag() == blocks[i][j].getFlag()) {
+                    return true;
+                }
+                if (j + 1 < size && i - 1 >= 0 &&
+                    blocks[i-1][j+1].getFlag() == blocks[i][j].getFlag()) {
+                    return true;
+                }
+
+                //  ? 
+                //
+                //  *
+                //  * 
+                //
+                //  ?
+                if (i - 2 >= 0 && blocks[i-2][j].getFlag() == blocks[i][j].getFlag()) {
+                    return true;
+                }
+                if (i + 3 < size && blocks[i+3][j].getFlag() == blocks[i][j].getFlag()) {
+                    return true;
+                }
+            }
+
+            for (i = 0; i < size - 2; i ++) {
+                if (blocks[i][j].getFlag() == blocks[i+2][j].getFlag()) {
+                    if (j - 1 >= 0 && blocks[i][j].getFlag() == blocks[i+1][j-1].getFlag()) {
+                        return true;
+                    }
+                    if (j + 1 < size && blocks[i][j].getFlag() == blocks[i+1][j+1].getFlag()) {
+                        return true;
+                    }
+                }
+            }
+        }
+    }
+    return false;
+}
