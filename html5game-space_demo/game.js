@@ -1,5 +1,7 @@
-var CANVAS_WIDTH = 480;
-var CANVAS_HEIGHT = 320;
+//var CANVAS_WIDTH = 480;
+//var CANVAS_HEIGHT = 320;
+var CANVAS_WIDTH = 320;
+var CANVAS_HEIGHT = 480;
 
 var canvasElement = $("<canvas width='" + CANVAS_WIDTH +
         "' height='" + CANVAS_HEIGHT + "'></canvas>");
@@ -66,8 +68,8 @@ function Bullet (I) {
 var player = {
     active: true,
     color: "#00A",
-    x: 220,
-    y: 270,
+    x: 140,
+    y: 440,
     blood: 5,
     width: 32,
     height: 32,
@@ -136,10 +138,17 @@ function update() {
     if (keydown.right) {
         player.x += 5;
     }
+    if (keydown.up) {
+        player.y -= 5;
+    }
+    if (keydown.down) {
+        player.y += 5;
+    }
     if (!player.active) {
         end();
     }
     player.x = player.x.clamp(0, CANVAS_WIDTH - player.width);
+    player.y = player.y.clamp(0, CANVAS_HEIGHT - player.height);
 
     playerBullets.forEach(function (bullet) {
         bullet.update();
