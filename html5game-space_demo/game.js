@@ -12,8 +12,10 @@ Number.prototype.clamp = Number.prototype.clamp || function (a, b) {
     else return this;
 };
 
+
 var playerBullets = [];
 var enemies = [];
+var bg = Sprite("bg");
 function Bullet (I) {
     I.active = true;
 
@@ -21,7 +23,7 @@ function Bullet (I) {
     I.yVelocity = -I.speed;
     I.width = 3;
     I.height = 3;
-    I.color = "#000";
+    I.color = "#0FF";
 
     I.inBounds = function() {
         return I.x >= 0 && I.x <= CANVAS_WIDTH &&
@@ -48,6 +50,7 @@ var player = {
     color: "#00A",
     x: 220,
     y: 270,
+    blood: 5,
     width: 32,
     height: 32,
     sprite: Sprite("player"),
@@ -56,7 +59,14 @@ var player = {
         //canvas.fillStyle = this.color;
         //canvas.fillRect(this.x, this.y, this.width, this.height);
     },
+    rest: false,
     shoot: function () {
+        if (this.rest) return;
+        this.rest = true;
+        var that = this;
+        setTimeout(function () {
+            that.rest = false;
+        }, 80);
         var bulletPosition = this.midpoint();
 
         playerBullets.push(Bullet({
@@ -74,7 +84,11 @@ var player = {
         };
     },
     explode: function () {
-        this.active = false;
+        this.blood --;
+        if (this.blood < 0) {
+            this.active = false;
+            Sound.play("game_over");
+        }
     }
 };
 
@@ -83,10 +97,16 @@ var keydown = {};
 // Pro Tip: Be sure to run your app after making changes. 
 // If something breaks it's a lot easier to track down 
 // when there's only a few lines of changes to look at.
-setInterval(function () {
+var INTERVAL = setInterval(function () {
     update();
     draw();
 }, 1000/FPS);
+
+function end() {
+    clearInterval(INTERVAL);
+    enemies = [];
+    draw();
+}
 
 function update() {
     if (keydown.space) {
@@ -97,6 +117,9 @@ function update() {
     }
     if (keydown.right) {
         player.x += 5;
+    }
+    if (!player.active) {
+        end();
     }
     player.x = player.x.clamp(0, CANVAS_WIDTH - player.width);
 
@@ -113,7 +136,7 @@ function update() {
     enemies = enemies.filter(function(enemy) {
         return enemy.active;
     });
-    if (Math.random() < 0.1) {
+    if (Math.random() < 0.05) {
         enemies.push(Enemy());
     }
 
@@ -121,7 +144,8 @@ function update() {
 }
 function draw() {
     canvas.clearRect(0, 0, CANVAS_WIDTH, CANVAS_HEIGHT);
-    player.draw();
+    bg.draw(canvas, 0, 0, CANVAS_WIDTH, CANVAS_HEIGHT);
+    if (player.active) player.draw();
 
     playerBullets.forEach(function (bullet) {
         bullet.draw();
@@ -157,6 +181,7 @@ function Enemy(I) {
     I.y = 0;
     I.xVelocity = 0;
     I.yVelocity = 2;
+    I.blood = 3;
 
     I.width = 32;
     I.height = 32;
@@ -184,6 +209,14 @@ function Enemy(I) {
         I.active = I.active && I.inBounds();
     };
 
+    I.hit = function () {
+        this.blood --;
+        if (this.blood < 0) {
+            this.active = false;
+            Sound.play("explosion");
+        }
+    };
+
     I.explode = function () {
         this.active = false;
         Sound.play("explosion");
@@ -198,18 +231,18 @@ function collides(a, b) {
         a.y + a.height > b.y;
 }
 
-function handleCollisions() {
+function handleCollisions(time) {
     playerBullets.forEach(function(bullet) {
         enemies.forEach(function(enemy) {
             if (collides(bullet, enemy)) {
-                enemy.explode();
+                enemy.hit();
                 bullet.active = false;
             }
         });
     });
 
     enemies.forEach(function(enemy) {
-        if (collides(enemy, player)) {
+        if (collides(enemy, player) && enemy.active) {
             enemy.explode();
             player.explode();
         }
