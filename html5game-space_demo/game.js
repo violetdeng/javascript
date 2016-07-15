@@ -16,6 +16,24 @@ Number.prototype.clamp = Number.prototype.clamp || function (a, b) {
 var playerBullets = [];
 var enemies = [];
 var bg = Sprite("bg");
+
+var scoreboard = {
+    score: 0,
+    font: "30px Verdana",
+    color: "#FFF",
+    x: 20,
+    y: 50,
+    draw: function () {
+        canvas.font = this.font;
+        canvas.fillStyle = this.color;
+        canvas.fillText("得分：" + this.score, this.x, this.y);
+    },
+    update: function () {
+        this.score ++;
+    }
+};
+
+
 function Bullet (I) {
     I.active = true;
 
@@ -145,7 +163,14 @@ function update() {
 function draw() {
     canvas.clearRect(0, 0, CANVAS_WIDTH, CANVAS_HEIGHT);
     bg.draw(canvas, 0, 0, CANVAS_WIDTH, CANVAS_HEIGHT);
-    if (player.active) player.draw();
+    if (player.active) {
+        player.draw();
+        scoreboard.draw();
+    } else {
+        canvas.font = "30px Verdana";
+        canvas.fillStyle = "#FFF";
+        canvas.fillText("Game Over", (CANVAS_WIDTH - 150) / 2, CANVAS_HEIGHT / 2);
+    }
 
     playerBullets.forEach(function (bullet) {
         bullet.draw();
@@ -214,12 +239,14 @@ function Enemy(I) {
         if (this.blood < 0) {
             this.active = false;
             Sound.play("explosion");
+            scoreboard.update();
         }
     };
 
     I.explode = function () {
         this.active = false;
         Sound.play("explosion");
+        scoreboard.update();
     };
     return I;
 };
