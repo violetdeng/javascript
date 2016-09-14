@@ -1,0 +1,14 @@
+<div class="gc-game-list">
+    <div class="media" ng-repeat="game in games">
+        <div class="media-left media-middle">
+            <a href="{{game.url}}"><img class="media-object img-rounded" ng-src="{{game.icon}}" alt="{{game.title}}"></a>
+        </div>
+        <div class="media-body">
+            <h4 class="media-heading">{{game.title}}&nbsp;<span class="label label-default">Default</span></h4>
+            <p>{{game.description}}</p>
+        </div>
+        <div class="media-right media-middle">
+            <a href="{{game.url}}" class="btn">开始</a>
+        </div>
+    </div>
+</div>

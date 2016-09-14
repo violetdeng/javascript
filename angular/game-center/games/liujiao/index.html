@@ -1,0 +1,49 @@
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>六角拼拼</title>
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="full-screen" content="yes">
+    <meta name="screen-orientation" content="portrait">
+    <meta name="x5-fullscreen" content="true">
+    <meta name="360-fullscreen" content="true">
+    <link rel="stylesheet" href="app.css">
+</head>
+<body>
+<div id="J_gameContainer"></div>
+<script src="game.js"></script>
+<script>
+//        (function (){updateShare("据说5000分是道槛！");})();
+    var game_max_score = 1;
+</script>
+<script>      
+    function hlmySetScore(score){
+        var unit = '分';
+        var text = '';
+        if(score > 0){
+            text = '这游戏太凶残！我玩了'+ score+'分,全世界只有3%的人可以玩120分!';
+        }else{
+            text = '这游戏太凶残！全世界只有3%的人可以玩120分';
+        }
+        var infos = {
+            hlmy:true,
+            score:score,
+            unit:unit,
+            text:text
+        }
+        if(score > 0){
+            top.postMessage(infos,'*')
+        }
+    }
+</script>
+    <script>
+    var _hmt = _hmt || [];
+    (function() {
+      //var hm = document.createElement("script");
+      //hm.src = "//hm.baidu.com/hm.js?7f70df09d6dc5f12842a518bf47a9e14";
+      //var s = document.getElementsByTagName("script")[0]; 
+      //s.parentNode.insertBefore(hm, s);
+    })();
+    </script>
+</body>
+</html>

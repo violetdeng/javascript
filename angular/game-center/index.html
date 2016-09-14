@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="en" ng-app="app">
+<head>
+    <meta charset="UTF-8">
+    <title></title>
+    <meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1, maximum-scale=1">
+    <link rel="stylesheet" href="../node_modules/bootstrap/dist/css/bootstrap.min.css"/>
+    <link rel="stylesheet" href="../node_modules/swiper/dist/css/swiper.min.css"/>
+    <link rel="stylesheet" href="app.css">
+</head>
+<body>
+    <header class="navbar navbar-static-top gc-nav">
+        <div class="container">
+            <nav class="collapse navbar-collapse">
+                <ul class="nav navbar-nav navbar-right">
+                    <li><a href="#">关注</a></li>
+                </ul>
+            </nav>
+        </div>
+    </header>
+    <div class="container gc-slider" ng-controller="HomeSliderCtrl">
+        <ks-swiper-container autoplay="2500" loop="true">
+            <ks-swiper-slide class="swiper-slide" ng-repeat="slider in sliders">
+                <img class="img img-responsive" ng-src="{{slider.url}}">
+            </ks-swiper-slide>
+        </ks-swiper-container>
+    </div>
+    <div class="container">
+        <nav class="collapse navbar-collapse">
+            <ul class="nav nav-justified">
+                <li><a href="#">新游</a></li>
+                <li><a href="#">礼包</a></li>
+                <li><a href="#">小游戏</a></li>
+                <li><a href="#">分类</a></li>
+            </ul>
+        </nav>
+    </div>
+    <div class="container">
+        <h2 class="gc-section-title"><img class="img" ng-src="./title1.png" alt=""></h2>
+        <div class="swiper-scroll gc-game-recommend" ng-controller="HomeRecommendCtrl">
+            <ks-swiper-container override-parameters="{grabCursor: true, scrollbarHide: true, slidesPerView: 'auto'}">
+                <ks-swiper-slide class="swiper-slide" ng-repeat="slider in sliders">
+                    <img class="img img-responsive img-rounded" ng-src="{{slider.url}}">
+                    <h4 ng-bind="slider.title"></h4>
+                </ks-swiper-slide>
+            </ks-swiper-container>
+        </div>
+    </div>
+    <div class="container" ng-controller="HomeHotCtrl">
+        <h2 class="gc-section-title"><img class="img" ng-src="./title2.png" alt=""></h2>
+        <gc-gamelist><div class="text-center"><img src="loading.gif"/></div></gc-gamelist>
+    </div>
+    <script src="../node_modules/jquery/dist/jquery.min.js"></script>
+    <script src="../node_modules/angular/angular.min.js"></script>
+    <script src="../node_modules/swiper/dist/js/swiper.js"></script>
+    <script src="../node_modules/angular-swiper/dist/angular-swiper.js"></script>
+    <script src="app/app.js"></script>
+</body>
+</html>
