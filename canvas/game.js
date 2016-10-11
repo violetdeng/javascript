@@ -48,6 +48,7 @@ function roundedRect(ctx,x,y,width,height,radius) {
     ctx.stroke();
 }
 
+// 绘制怪物，传入偏移量
 // x : x平移
 // y : y平移
 function drawMonster(ctx, x, y, fillColor) {
@@ -57,6 +58,8 @@ function drawMonster(ctx, x, y, fillColor) {
     function handleY (value) {
         return y + value;
     }
+
+    // 轮廓
     ctx.fillStyle = fillColor;
     ctx.beginPath();
     ctx.moveTo(handleX(0), handleY(28));
@@ -71,6 +74,7 @@ function drawMonster(ctx, x, y, fillColor) {
     ctx.lineTo(handleX(4.733),  handleY(23.277));
     ctx.fill();
 
+    // 眼睛
     ctx.fillStyle = "white";
     ctx.beginPath();
     ctx.moveTo(handleX(8), handleY(8));
@@ -85,6 +89,7 @@ function drawMonster(ctx, x, y, fillColor) {
     ctx.bezierCurveTo(handleX(24), handleY(11), handleX(23), handleY(8),  handleX(21), handleY(8));
     ctx.fill();
 
+    // 眼珠
     ctx.fillStyle = fillColor;
     ctx.beginPath();
     ctx.arc(handleX(18), handleY(14), 2, 0, Math.PI*2, true);

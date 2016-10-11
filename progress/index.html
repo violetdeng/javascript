@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+    <meta charset="UTF-8">
+    <title>进度条</title>
+    <style>
+        .container { width: 1000px; margin: 0 auto; }
+        .progress { background: green; color: #FFF; margin-bottom: 10px; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div id="J_progress" class="progress"></div>
+        <button id="J_play">演示</button>
+    </div>
+    <script src="requestAnimationFrame.js"></script>
+    <script>
+        var progress = 0;
+        var ele = document.getElementById("J_progress");
+        function step () {
+            progress ++;
+            if (progress <= 100) {
+                ele.style.width = progress + "%";
+                ele.innerHTML = progress + "%";
+                requestAnimationFrame(step);
+            }
+        }
+        window.requestAnimationFrame(step);
+        document.getElementById("J_play").addEventListener("click", function () {
+            progress = 0;
+            window.requestAnimationFrame(step);
+        });
+    </script>
+</body>
+</html>
