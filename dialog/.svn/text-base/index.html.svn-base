@@ -1,0 +1,15 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3c.org/TR/xhtml/DTD/xhtml1-strict.dtd">
+<html>
+<head>
+    <script type="text/javascript" src="../jquery-1.4.4.min.js"></script>
+    <script type="javascript/text" src="dialog.js"></script>
+    <link rel="stylesheet" type="text/css" href="dialog.css"/>
+</head>
+<body>
+<script>
+$(document).ready(function(){
+        $.dialog("kkk");
+});
+</script>
+</body>
+</html>

@@ -1,0 +1,6 @@
+.dialog { position: absolute; }
+.dialog-header { border: 1px solid #CCC; position: relative; padding: 5px 10px; }
+.dialog-header .dialog-header-title { margin: 0; }
+.dialog-header .dialog-header-closebtn { position: absolute; top: 5px; right: 10px; cursor: pointer; }
+.dialog-body { border: 1px solid #DDD; }
+.dialog-footer { border: 1px solid #EEE; }

@@ -1,0 +1,30 @@
+var Dialog = {};
+Dialog.construct = function ( settings ) {
+}
+$.extend( $.dialog, {
+    options:{
+        buttons: { cmtBtn, backBtn }
+    },
+});
+
+var myDialogClass = "self-dialog";
+
+Dialog = function ( element ) {
+    if ( arguments.length ) {
+        this._init( element );
+    }
+};
+
+$.dialog.prototype = {
+    _init: function ( element ) {
+        var self = this
+            dialogMsg = (self.dialogMsg = $('<div></div>'))
+                .appendTo(document.body)
+                .addClass(myDialogClass);
+    },
+    open: function () {
+    },
+    _getInst: function () {
+              }
+}
+})(JQuery);
