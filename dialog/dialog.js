@@ -6,7 +6,6 @@ function isString (str) {
 
 var defaults = {
         appendTo: "body",
-        withMask: true,
         size: "normal",
         width: 0,
         title: "",
@@ -14,6 +13,7 @@ var defaults = {
         buttons: {},
         content: "",
         contentHtml: null,
+        closeWithBlank: true,
         afterCreate: null,
         beforeClose: null,
         afterClose: null
@@ -31,6 +31,7 @@ function Dialog (options) {
     this.options = $.extend({}, defaults, options);
     this.buttons = [];
     this._create();
+    this._init();
 }
 
 Dialog.prototype = {
@@ -39,80 +40,111 @@ Dialog.prototype = {
     $body: null,
     $footer: null,
     $mask: null,
-    width: null,
     buttons: null,
-    _create: function () {
-        var that = this,
-            options = this.options,
-            $title = $(document.createElement("h5")),
-            width,
-            $container, $header, $body, $footer,
-            $closeButton, $button;
+    _createContainer: function () {
+        var o = this.options,
+            width = SIZES.normal.width,
+            $container;
 
         this.$container = $container = $(document.createElement("div"))
             .addClass("dialog").hide();
-        if (options.width) {
-            width = options.width;
-        } else if (options.size && SIZES[options.size]) {
-            width = SIZES[options.size].width;
-        } else {
-            width = SIZES.normal.width;
-        }
-        this.width = width;
+        o.width && (width = o.width) || o.size && SIZES[o.size] && (width = SIZES[o.size].width);
         $container.css({ width: width });
-        this.$mask = $(document.createElement("div"));
 
+        return $container;
+    },
+    _createHeader: function () {
+        if (!this.options.title && !this.options.closeButton) return;
+
+        var that = this,
+            o = this.options,
+            $title = $(document.createElement("h5")),
+            $header;
         // 头部
         this.$header = $header = $(document.createElement("div"))
             .addClass("dialog-header");
-        $title.addClass("dialog-header-title").text(options.title);
+        $title.addClass("dialog-header-title").text(o.title);
         $header.append($title);
-        $container.append($header);
-        if (options.closeButton) {
-            $closeButton = $(document.createElement("span"))
+        this.$container.append($header);
+        if (o.closeButton) {
+            $(document.createElement("span"))
                 .addClass("dialog-header-closebtn")
                 .text("X").on("click", function () {
                     that.close();
-                });
-            $header.append($closeButton);
+                }).appendTo($header);
         }
+    },
+    _createFooter: function () {
+        if ($.isEmptyObject(this.options.buttons)) { return; }
 
-        // 内容区
-        this.$body = $body = $(document.createElement("div"))
-            .addClass("dialog-body");
-        $container.append($body);
-        if (options.content) {
-            $body.text(options.content);
-        } else if (options.contentHtml) {
-            $body.html(options.contentHtml);
-        }
-
+        var that = this,
+            o = this.options,
+            $footer, $button;
         // 尾部
         this.$footer = $footer = $(document.createElement("div"))
             .addClass("dialog-footer");
-        $container.append($footer);
-        $.each(options.buttons, function (text, clbk) {
+        this.$container.append($footer);
+        $.each(o.buttons, function (text, clbk) {
             $button = $(document.createElement("button"))
                 .text(text);
-            if (isString(clbk)) {
-                switch (clbk) {
-                    case "close":
-                        $button.on("click", function () {
-                            that.close();
-                        });
-                        break;
-                }
-            } else if ($.isFunction(clbk)) {
+            if ($.isFunction(clbk)) {
                 $button.on("click", clbk);
             }
             that.buttons.push($button);
             $footer.append($button);
         });
+    },
+    _createMask: function () {
+        var that = this,
+            o = this.options,
+            $mask;
+        this.$mask = $mask = $(document.createElement("div"))
+            .addClass("dialog-mask");
+        $mask.css({
+            position: "fixed",
+            top: 0,
+            left: 0,
+            bottom: 0,
+            right: 0,
+            height: "100%"
+        });
+        $(o.appendTo).append($mask);
+    },
+    _create: function () {
+        var that = this,
+            o = this.options,
+            $container, $body;
 
-        $container.appendTo($(options.appendTo));
-        this._trigger(options.afterCreate);
+        $container = this._createContainer();
+        this._createMask();
+        this._createHeader();
+
+        // 内容区
+        this.$body = $body = $(document.createElement("div"))
+            .addClass("dialog-body");
+        $container.append($body);
+        if (o.content) {
+            $body.text(o.content);
+        } else if (o.contentHtml) {
+            $body.html(o.contentHtml);
+        }
+
+        this._createFooter();
+
+        $container.appendTo($(o.appendTo));
+        this._trigger(o.afterCreate);
+    },
+    _init: function () {
+        var that = this,
+            o = this.options;
+        if (o.closeWithBlank) {
+            this.$mask.on("click", function (ev) {
+                that.close();
+            });
+        }
     },
     _trigger: function (clbk) {
+
         if (!$.isFunction(clbk)) return;
 
         clbk.call(this);
@@ -124,22 +156,26 @@ Dialog.prototype = {
             width = $wrap.width(),
             height = this.options.appendTo === "body" ? $(window).height() : $wrap.height();
         $container.css({
-            left: (width - this.width) / 2 + offset.left,
-            top: (height - this.$container.height()) / 2 + offset.top
-        }).show();
+            left: (width - $container.width()) / 2 + offset.left,
+            top: (height - $container.height()) / 2 + offset.top
+        });
+        //moveToTop($container);
+        $container.show();
     },
     close: function () {
         var o = this.options;
         this._trigger(o.beforeClose);
         this.$container.hide();
+        this.$mask.hide();
         this._trigger(o.afterClose);
     },
     destroy: function () {
-        this.$header = null;
-        this.$body = null;
-        this.$footer = null;
+        this.$container.hide();
         this.$container.remove();
-        this.$container = null;
+        this.$mask.hide();
+        this.$mask.remove();
+        this.$header = this.$body = this.$footer = 
+            this.$container = this.$mask = null;
     }
 };
 

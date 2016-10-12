@@ -11,9 +11,13 @@
 <script>
     var dialog = Dialog({
         title: "弹框",
+        //closeButton: false,
         contentHtml: "<p>有些什么功能呢？</p>",
+        closeWithBlank: false,
         buttons: {
-            "知道了": "close"
+            "知道了": function () {
+                dialog.close();
+            }
         },
         afterCreate: function () {
             $.each(this.buttons, function () {
