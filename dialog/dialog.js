@@ -14,6 +14,7 @@ var defaults = {
         content: "",
         contentHtml: null,
         closeWithBlank: true,
+        zIndex: 1000,
         afterCreate: null,
         beforeClose: null,
         afterClose: null
@@ -22,7 +23,23 @@ var defaults = {
         normal: {
             width: 500
         }
-    };
+    },
+    MAX_ZINDEX = 0;
+
+function moveToTop (Dialog) {
+    var o = Dialog.options;
+    if (o.zIndex > MAX_ZINDEX) {
+        MAX_ZINDEX = o.zIndex;
+    }
+    if (Dialog.$mask) {
+        MAX_ZINDEX += 1;
+        Dialog.$mask.css("zIndex", MAX_ZINDEX);
+    }
+
+    MAX_ZINDEX += 1;
+    Dialog.$container.css("zIndex", MAX_ZINDEX);
+}
+
 function Dialog (options) {
     if (!(this instanceof Dialog)) {
         return new Dialog(options);
@@ -107,7 +124,7 @@ Dialog.prototype = {
             bottom: 0,
             right: 0,
             height: "100%"
-        });
+        }).hide();
         $(o.appendTo).append($mask);
     },
     _create: function () {
@@ -150,6 +167,8 @@ Dialog.prototype = {
         clbk.call(this);
     },
     open: function () {
+        if (!this.$container) return;
+
         var $wrap = $(this.options.appendTo),
             $container = this.$container;
         var offset = $wrap.offset(),
@@ -159,23 +178,46 @@ Dialog.prototype = {
             left: (width - $container.width()) / 2 + offset.left,
             top: (height - $container.height()) / 2 + offset.top
         });
-        //moveToTop($container);
+        moveToTop(this);
+        this.$mask.show();
         $container.show();
     },
     close: function () {
-        var o = this.options;
+        if (!this.$container) return;
+
+        var that = this,
+            o = this.options,
+            g;
         this._trigger(o.beforeClose);
+
         this.$container.hide();
         this.$mask.hide();
+
+        g = 0;
+        $(".dialog").each(function () {
+            if (this !== that.$container[0]) {
+                g = Math.max(g, $(this).css("zIndex"));
+            }
+        });
+        MAX_ZINDEX = g;
+
         this._trigger(o.afterClose);
     },
     destroy: function () {
+        if (!this.$container) return;
+
         this.$container.hide();
         this.$container.remove();
         this.$mask.hide();
         this.$mask.remove();
         this.$header = this.$body = this.$footer = 
             this.$container = this.$mask = null;
+    },
+    getContent: function () {
+        return this.$body;
+    },
+    setContent: function (content) {
+        this.$body.html(content);
     }
 };
 
