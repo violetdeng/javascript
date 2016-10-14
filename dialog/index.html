@@ -8,6 +8,7 @@
     <link rel="stylesheet" type="text/css" href="dialog.css"/>
 </head>
 <body>
+    adsfsafsffdsafdadfsfdfs
 <script>
     var dialog = Dialog({
         title: "弹框",
@@ -15,15 +16,16 @@
         contentHtml: "<p>有些什么功能呢？</p>",
         closeWithBlank: false,
         buttons: {
-            "知道了": function () {
-                dialog.close();
+            "知道了": {
+                className: "btn btn-sm btn-primary"
+            },
+            "取消": {
+                callback: function () {
+                    dialog.close();
+                }
             }
         },
-        afterCreate: function () {
-            $.each(this.buttons, function () {
-                this.addClass("btn btn-sm btn-default");
-            });
-        },
+        buttonClassName: "btn btn-sm btn-default",
         afterClose: function () {
             this.destroy();
         }

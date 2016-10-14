@@ -10,7 +10,9 @@ var defaults = {
         width: 0,
         title: "",
         closeButton: true,
+        closeButtonClassName: "glyphicon glyphicon-remove",
         buttons: {},
+        buttonClassName: "",
         content: "",
         contentHtml: null,
         closeWithBlank: true,
@@ -85,8 +87,8 @@ Dialog.prototype = {
         this.$container.append($header);
         if (o.closeButton) {
             $(document.createElement("span"))
-                .addClass("dialog-header-closebtn")
-                .text("X").on("click", function () {
+                .addClass("dialog-header-closebtn " + o.closeButtonClassName)
+                .on("click", function () {
                     that.close();
                 }).appendTo($header);
         }
@@ -96,20 +98,31 @@ Dialog.prototype = {
 
         var that = this,
             o = this.options,
-            $footer, $button;
+            $footer;
         // 尾部
         this.$footer = $footer = $(document.createElement("div"))
             .addClass("dialog-footer");
         this.$container.append($footer);
-        $.each(o.buttons, function (text, clbk) {
-            $button = $(document.createElement("button"))
-                .text(text);
-            if ($.isFunction(clbk)) {
-                $button.on("click", clbk);
-            }
-            that.buttons.push($button);
-            $footer.append($button);
+        $.each(o.buttons, function (text, options) {
+            $footer.append(that._createButton(text, options));
         });
+    },
+    _createButton: function (text, options) {
+        var $button = $(document.createElement("button"))
+            .text(text), 
+            o = this.options,
+            className, callback;
+        if ($.isFunction(options)) {
+            callback = options;
+            className = o.buttonClassName;
+        } else {
+            callback = options.callback || $.loop;
+            className = options.className || o.buttonClassName;
+        }
+        $button.on("click", callback)
+            .addClass(className);
+        this.buttons.push($button);
+        return $button;
     },
     _createMask: function () {
         var that = this,
