@@ -172,6 +172,58 @@ Dialog.prototype = {
                 that.close();
             });
         }
+        // 移动
+        this._draggable();
+    },
+    _draggable: function () {
+        var that = this,
+            o = this.options,
+            movable = false;
+        var appendTo = o.appendTo === "body" ? window : o.appendTo,
+            offsetTop, offsetLeft;
+        var topMin = appendTo === window ? 0 : $(appendTo).offset().top,
+            topMax = topMin + $(appendTo).height(),
+            leftMin = appendTo === window ? 0 : $(appendTo).offset().left,
+            leftMax = leftMin + $(appendTo).width(),
+            width = this.$container.width(),
+            height = this.$container.height();
+        this.$header.on("mousedown", function (ev) {
+            var offset = that.$container.offset();
+            movable = true;
+            offsetTop = ev.clientY - offset.top;
+            offsetLeft = ev.clientX - offset.left;
+            $("body").addClass("movable");
+            ev.preventDefault();
+        });
+        $(window).on("mouseup", function (ev) {
+            movable = false;
+            $("body").removeClass("movable");
+            ev.preventDefault();
+        }).on("mousemove", function (ev) {
+            if (!movable) return;
+            var x = false, y = false;
+            if (topMin <= ev.clientY - offsetTop && topMax >= ev.clientY + height - offsetTop) {
+                x = true;
+            }
+            if (leftMin <= ev.clientX - offsetLeft && leftMax >= ev.clientX + width - offsetLeft) {
+                y = true;
+            }
+            if (x && y) {
+                that.$container.css({
+                    top: ev.clientY - offsetTop,
+                    left: ev.clientX - offsetLeft
+                });
+            } else if (x) {
+                that.$container.css({
+                    top: ev.clientY - offsetTop
+                });
+            } else if (y) {
+                that.$container.css({
+                    left: ev.clientX - offsetLeft
+                });
+            }
+            ev.preventDefault();
+        });
     },
     _trigger: function (clbk) {
 

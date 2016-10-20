@@ -3,6 +3,7 @@
 .dialog-header .dialog-header-title { margin: 0; font-size: 16px; }
 .dialog-header .dialog-header-closebtn { position: absolute; top: 7px; right: 10px; cursor: pointer; transition: .1s; }
 .dialog-header .dialog-header-closebtn:hover { font-size: 16px; }
+.dialog-header:hover { cursor: move; }
 .dialog-body { padding: 5px 10px; }
 .dialog-footer { border-top: 1px solid #CCC; padding: 5px 10px; text-align: right; }
 .dialog-footer button { margin-left: 5px; }
@@ -10,3 +11,5 @@
 
 .dialog-footer { display: flex; padding: 0; }
 .dialog-footer button { margin: 0; border: none; border-radius: 0; flex: 1; }
+
+.movable { cursor: move; -webkit-user-select: none; user-select: none; }
