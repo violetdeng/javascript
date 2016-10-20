@@ -26,7 +26,8 @@ var defaults = {
             width: 500
         }
     },
-    MAX_ZINDEX = 0;
+    MAX_ZINDEX = 0,
+    UUID = 0;
 
 function moveToTop (Dialog) {
     var o = Dialog.options;
@@ -42,11 +43,16 @@ function moveToTop (Dialog) {
     Dialog.$container.css("zIndex", MAX_ZINDEX);
 }
 
+function getUuid() {
+    return "dialog_" + (UUID ++);
+}
+
 function Dialog (options) {
     if (!(this instanceof Dialog)) {
         return new Dialog(options);
     }
 
+    this.uuid = getUuid();
     this.options = $.extend({}, defaults, options);
     this.buttons = [];
     this._create();
@@ -195,11 +201,11 @@ Dialog.prototype = {
             $("body").addClass("movable");
             ev.preventDefault();
         });
-        $(window).on("mouseup", function (ev) {
+        $(window).on("mouseup." + this.uuid, function (ev) {
             movable = false;
             $("body").removeClass("movable");
             ev.preventDefault();
-        }).on("mousemove", function (ev) {
+        }).on("mousemove." + this.uuid, function (ev) {
             if (!movable) return;
             var x = false, y = false;
             if (topMin <= ev.clientY - offsetTop && topMax >= ev.clientY + height - offsetTop) {
@@ -277,6 +283,9 @@ Dialog.prototype = {
         this.$mask.remove();
         this.$header = this.$body = this.$footer = 
             this.$container = this.$mask = null;
+
+        $(window).off("mousemove." + this.uuid);
+        $(window).off("mouseup." + this.uuid);
     },
     getContent: function () {
         return this.$body;
