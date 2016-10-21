@@ -4,7 +4,16 @@
             "text": "Text Input"
         },
         "elements": [{
-            "name": "text_input"
+            "name": "text_input",
+            "value": 123
+        }]
+    }, {
+        "label": {
+            "text": "File Input"
+        },
+        "elements": [{
+            "type": "file",
+            "name": "file_input"
         }]
     }, {
         "label": {
@@ -14,7 +23,10 @@
             "type": "checkbox",
             "name": "checkbox[]",
             "value": "1",
-            "label": "Checkbox One"
+            "label": "Checkbox One",
+            "attributes": {
+                "checked": "checked"
+            }
         }, {
             "type": "checkbox",
             "name": "checkbox[]",
@@ -29,7 +41,10 @@
             "type": "radio",
             "name": "radio[]",
             "value": "1",
-            "label": "Radio One"
+            "label": "Radio One",
+            "attributes": {
+                "checked": "checked"
+            }
         }, {
             "type": "radio",
             "name": "radio[]",
@@ -63,7 +78,7 @@
         }]
     }, {
         "elements": [{
-            "type": "button",
+            "type": "submit",
             "className": "btn btn-default",
             "text": "Button"
         }]

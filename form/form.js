@@ -20,6 +20,12 @@ var Event = (function () {
                 });
             },
             removeEventListener: function (element, type, callback) {
+            },
+            dispatchEvent: function (element, type) {
+                var event = document.createEventObject();
+                event.eventType = type;
+                event.eventName = type;
+                element.fireEvent("on" + event.eventType, event);
             }
         }; 
     } else {
@@ -28,6 +34,12 @@ var Event = (function () {
                 element.addEventListener(type, callback);
             },
             removeEventListener: function (element, type, callback) {
+            },
+            dispatchEvent: function (element, type) {
+                var event = document.createEvent("HTMLEvents");
+                event.initEvent(type, true, true);
+                event.eventName = type;
+                element.dispatchEvent(event);
             }
         };
     }
@@ -142,15 +154,22 @@ createClass("Element", {
         className: null,
         title: null,
         attributes: null,
-        text: null
+        text: null,
+        on: null
     },
     _init: function () {
+        var that = this;
         this.createElement();
         if (this.options.id) this.setAttribute("id", this.options.id);
         if (this.options.title) this.setAttribute("title", this.options.title);
         if (this.options.className) this.setClass(this.options.className);
         if (this.options.text) this.setText(this.options.text);
         if (this.options.attributes) this.setAttributes(this.options.attributes);
+        if (this.options.on) {
+            $.each(this.options.on, function (eventName, callback) {
+                that.bind(eventName, callback);
+            });
+        }
     },
     element: null,
     getElement: function () {
@@ -230,6 +249,9 @@ createClass("Element", {
     },
     bind: function (type, callback) {
         var that = this;
+        if (!$.isFunction(callback)) {
+            callback = new Function(callback);
+        }
         Event.addEventListener(this.element, type, function () {
             callback.apply(that, arguments);
         });
@@ -237,6 +259,10 @@ createClass("Element", {
     },
     unbind: function (type, callback) {
         Event.removeEventListener(this.element, type);
+        return this;
+    },
+    trigger: function (type) {
+        Event.dispatchEvent(this.element, type);
         return this;
     }
 });
@@ -282,6 +308,7 @@ createClass("FormElement", Form.Element, {
         }
         if (this.options.name) this.setName(this.options.name);
         if (this.options.value) this.setValue(this.options.value);
+        this.validate();
     },
     getName: function () {
         return this.element.getAttribute("name");
@@ -299,6 +326,54 @@ createClass("FormElement", Form.Element, {
     setValue: function (value) {
         this.element.value = value;
         return this;
+    },
+    validate: function () {
+        this.bind("focus", function () {
+            console.log("focus");
+        });
+        this.bind("input", function () {
+            console.log("input");
+        });
+        this.bind("change", function () {
+            console.log("change");
+        });
+        this.bind("blur", function () {
+            console.log("blur");
+        });
+    }
+});
+
+createClass("File", Form.Element, {
+    _init: function () {
+        var o = deepExtend({}, this.options),
+            that = this,
+            name = this.options.name;
+        this.options = {
+            nodeName: "div",
+            className: "form-file-container"
+        };
+        delete o.name;
+        o.nodeName = "input";
+        o.type = "text";
+        o.attributes = this.options.attributes || {};
+        o.attributes.readonly = "readonly";
+        this._super();
+        this.valueElement = new Form.FormElement(o);
+        this.fileElement = new Form.FormElement({
+            type: "file",
+            name: name,
+            className: o.className + " form-file-input"
+        });
+        this.appendChild(this.valueElement);
+        this.appendChild(this.fileElement);
+        this.fileElement.bind("change", function () {
+            var v = that.fileElement.getValue();
+            if (v != that.valueElement.getValue()) {
+                that.valueElement.setValue(v);
+                that.valueElement.trigger("input");
+                that.valueElement.trigger("change");
+            }
+        });
     }
 });
 
@@ -359,7 +434,8 @@ createClass("Checkbox", Form.FormElement, {
     options: {
         nodeName: "input",
         type: "checkbox",
-        label: null
+        label: null,
+        checked: false,
     },
     _init: function () {
         this._super();
@@ -407,7 +483,9 @@ var typeToClass = {
     "checkbox": "Checkbox",
     "radio": "Checkbox",
     "textarea": "Textarea",
-    "button": "Button"
+    "button": "Button",
+    "submit": "Button",
+    "file": "File"
 };
 
 createClass("BootstrapForm", {
@@ -450,9 +528,9 @@ createClass("BootstrapForm", {
         var className = typeToClass[options.type] || "FormElement",
             container, element;
         // TODO
-        if (false === inArray(options.type, ["checkbox", "radio", "button"])) {
+        if (false === inArray(options.type, ["checkbox", "radio", "button", "submit"])) {
             options.className = options.className ? options.className + " form-control" : "form-control";
-        } else if (options.type === "button") {
+        } else if (options.type === "button" || options.type === "submit") {
             options.button && (options.type = options.button);
         } else {
             container = Form.Element({ className: options.type });
