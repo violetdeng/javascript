@@ -1,13 +1,25 @@
 (function () {
-  chrome.storage.sync.get('settings', function (data) {
-    if (!data.settings || !data.settings.length) {
-      return
+  chrome.storage.sync.get('close', function (data) {
+    if (data.close && data.close.length) {
+      for (let item of data.close) {
+        let pattern = new RegExp(item)
+        if (pattern.test(location.href)) return
+      }
     }
-    for (let item of data.settings) {
-      let pattern = new RegExp(item.url)
-      if (pattern.test(location.href)) init(item)
-    }
+    start()
   });
+
+  function start () {
+    chrome.storage.sync.get('settings', function (data) {
+      if (!data.settings || !data.settings.length) {
+        return
+      }
+      for (let item of data.settings) {
+        let pattern = new RegExp(item.url)
+        if (pattern.test(location.href)) init(item)
+      }
+    });
+  }
 
   function init (option) {
 
