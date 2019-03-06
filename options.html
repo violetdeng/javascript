@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf8">
+    <link rel="stylesheet" type="text/css" href="options.css">
+  </head>
+  <body>
+    <div class="fields">
+      <div class="field">网站URL</div>
+      <div class="field">内容路径</div>
+      <div class="field">下一章路径</div>
+      <div class="field">上一章路径</div>
+    </div>
+    <div id="settingsDiv">
+    </div>
+    <div class="fields">
+      <div class="field">
+        <button id="addButton">添加</button>
+      </div>
+    </div>
+    <div class="fields">
+      <div class="field">
+        <button id="saveButton" class="primary">保存</button>
+      </div>
+    </div>
+    <script type="text/template" id="addTemplate">
+      <div class="field">
+        <input name="url" placeholder="网站URL" />
+      </div>
+      <div class="field">
+        <input name="content" placeholder="内容类名" />
+      </div>
+      <div class="field">
+        <input name="next" placeholder="下一章类名" />
+      </div>
+      <div class="field">
+        <input name="prev" placeholder="上一章类名" />
+      </div>
+    </script>
+  </body>
+  <script src="options.js"></script>
+</html>
