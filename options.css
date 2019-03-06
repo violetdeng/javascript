@@ -101,3 +101,13 @@ button.primary:hover {
   color: #fff;
   text-shadow: none;
 }
+.svg-inline--fa {
+  display: inline-block;
+  font-size: inherit;
+  height: 1.5em;
+  overflow: visible;
+  margin-top: 5px;
+}
+.delete-button {
+  cursor: pointer;
+}
