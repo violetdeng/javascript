@@ -43,10 +43,7 @@
     if (option.prev) {
       let prev = document.querySelectorAll(option.prev)
       if (prev.length > 0) {
-        prev = prev[0]
-        if (prev.getElementsByTagName('a').length > 0) {
-          prevChapter = prev.getElementsByTagName('a')[0].href
-        }
+        prevChapter = prev[0].href
       }
       if (prevChapter) {
         let tmp = document.createElement('a')
@@ -60,10 +57,7 @@
     let next = document.querySelectorAll(option.next)
     let nextChapter = false
     if (next.length > 0) {
-      next = next[0]
-      if (next.getElementsByTagName('a').length > 0) {
-        nextChapter = next.getElementsByTagName('a')[0].href
-      }
+      nextChapter = next[0].href
     }
     if (nextChapter) {
       let tmp = document.createElement('a')
@@ -89,4 +83,14 @@
       document.body.style = "background: #E9FAFF; font-size: 20px;"
     }
   }
+
+  chrome.runtime.onMessage.addListener(
+    function(message, sender, sendResponse) {
+      switch(message.type) {
+        case "settings":
+          new Settings()
+          break;
+      }
+    }
+  );
 })()

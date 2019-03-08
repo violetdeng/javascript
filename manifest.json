@@ -13,7 +13,7 @@
   "content_scripts": [
     {
       "matches": ["http://*/*", "https://*/*"],
-      "js": ["content.js"]
+      "js": ["settings.js", "content.js"]
     }
   ],
   "icons": {
@@ -26,6 +26,9 @@
     "scripts": [
       "context.js"
     ]
+  },
+  "browser_action": {
+    "default_popup": "popup.html"
   },
   "options_page": "options.html",
   "manifest_version": 2
