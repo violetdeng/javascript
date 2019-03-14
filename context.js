@@ -1,17 +1,46 @@
-let parent = chrome.contextMenus.create({
-  'title': '读书'
-});
+chrome.runtime.onMessage.addListener(
+  function(message, sender, sendResponse) {
+    switch(message.type) {
+      case "settings":
+        new Settings()
+        break;
+      case "load":
+        chrome.contextMenus.removeAll(function () {
+          chrome.tabs.getSelected(null, function(tab) {
+            createContextMenu(tab.url)
+          });
+        })
+        break
+    }
+  }
+);
 
-let close = chrome.contextMenus.create({
-  'title': '关闭',
-  'parentId': parent,
-  'onclick': function () {
-    chrome.tabs.query({
-      active: true,
-      currentWindow: true
-    }, function(tabs) {
-      let tab = tabs[0];
-      let url = tab.url;
+function createContextMenu (url) {
+  if (!url) return;
+  let parts = url.split('/');
+  if (parts.length < 2) return
+  url = parts[0] + '//' + parts[2] + '/*'
+  chrome.storage.sync.get('close', function (data) {
+    let close = data.close || []
+    let exists = false
+    for (let item of close) {
+      let pattern = new RegExp(item)
+      if (pattern.test(url)) exists = true
+    }
+
+    if (exists) {
+      addOpen(url)
+    } else {
+      addClose(url)
+    }
+  })
+}
+
+function addClose (url) {
+  chrome.contextMenus.create({
+    'title': '关闭',
+    'contexts': ['all'],
+    'onclick': function () {
       let parts = url.split('/');
       if (parts.length < 2) return
       url = parts[0] + '//' + parts[2] + '/*'
@@ -31,9 +60,9 @@ let close = chrome.contextMenus.create({
 
         refresh();
       });
-    });
-  }
-})
+    }
+  })
+}
 
 function refresh() {
   chrome.tabs.getSelected(null, function(tab) {
@@ -42,16 +71,11 @@ function refresh() {
   });
 }
 
-let open = chrome.contextMenus.create({
-  'title': '开启',
-  'parentId': parent,
-  'onclick': function () {
-    chrome.tabs.query({
-      active: true,
-      currentWindow: true
-    }, function(tabs) {
-      let tab = tabs[0];
-      let url = tab.url;
+function addOpen (url) {
+  chrome.contextMenus.create({
+    'title': '开启',
+    'contexts': ['all'],
+    'onclick': function () {
       let parts = url.split('/');
       if (parts.length < 2) return
       url = parts[0] + '//' + parts[2] + '/*'
@@ -70,6 +94,6 @@ let open = chrome.contextMenus.create({
 
         refresh();
       });
-    });
-  }
-})
+    }
+  })
+}

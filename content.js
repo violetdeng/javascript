@@ -93,4 +93,6 @@
       }
     }
   );
+
+  chrome.runtime.sendMessage({type: "load"}, function () {})
 })()
