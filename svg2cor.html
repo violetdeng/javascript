@@ -1,0 +1,67 @@
+<html>
+<head>
+  <meta charset="utf8">
+  <title>SVG转为坐标</title>
+</head>
+<body>
+  <input id="file" type="file"/>
+  <button id="export">确定</button>
+  <div id="box"></div>
+  <script src="./jquery-3.6.0.min.js"></script>
+  <script type="text/javascript">
+  $("#file").on("change", function (e) {
+      var container = $("#box").empty()
+      for (let i = 0; i < e.target.files.length; i ++) {
+        let file = e.target.files[i];
+        let reader = new FileReader();
+        reader.onload = function(){
+          container.append(this.result);
+        };
+        reader.readAsText(file);
+      }
+  })
+
+  $("#export").on("click", function () {
+      $("#box").find("svg").each(function() {
+          var content = JSON.stringify(generateCor(this));
+          var blob = new Blob([content], {type: "text/plain;charset=utf-8"});
+          saveAs(blob, "save.json");
+      })
+  })
+
+  function saveAs(blob, filename) {
+    var e = document.createEvent('MouseEvents'),
+      a = document.createElement('a');
+    a.download = filename
+    a.href = window.URL.createObjectURL(blob)
+    a.dataset.downloadurl = ['text/json', a.download, a.href].join(':')
+    e.initMouseEvent('click', true, false, window, 0, 0, 0, 0, 0, false, false, false, false, 0, null)
+    a.dispatchEvent(e)
+  }
+
+  function generateCor(ele) {
+    var lines = []
+    $(ele).find("path").each(function(i){
+      var path = this;
+      var len = path.getTotalLength();
+      var p = path.getPointAtLength(0);
+      var j = []
+      j.push({
+        x: p.x,
+        y: p.y
+      })
+      for(var i=1; i<len; i++){
+        p = path.getPointAtLength(i);
+        j.push({
+          x: p.x,
+          y: p.y
+        })
+      }
+      lines.push(j)
+    });
+    return lines
+  }
+
+  </script>
+</body>
+</html>
