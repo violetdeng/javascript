@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <title>各种动画研究</title>
+    <style>
+      body { margin: 0; }
+      #rolllist {
+        width: 100px;
+        height: 45px;
+        margin: 100px auto;
+        overflow: hidden;
+      }
+      ul,li {
+        margin: 0;
+        padding: 0;
+      }
+    </style>
+  </head>
+  <body>
+    <div id="rolllist">
+      <ul>
+        <li>列表1</li>
+        <li>列表2</li>
+        <li>列表3</li>
+        <li>列表4</li>
+        <li>列表5</li>
+      </ul>
+    </div>
+    <script src="./node_modules/jquery/dist/jquery.min.js"></script>
+    <script>
+      function getGcd(a, b) {
+        let max = Math.max(a, b);
+        let min = Math.min(a, b);
+        if (max % min === 0) {
+          return min;
+        } else {
+          return getGcd(max % min, min);
+        }
+      }
+      function getLcm(a, b) {
+        return a * b / getGcd(a, b);
+      }
+
+      var $container = $('#rolllist>ul');
+      var $items = $container.children();
+
+      const windowSize = 3;
+      const moveSize = 2;
+      const squenceSize = $items.length;
+
+      const lcm = getLcm(moveSize, squenceSize);
+      const repeatNumber = lcm / squenceSize;
+      const resetIndex = lcm / moveSize;
+
+      const height = $items.first().height();
+      $items.each((index, item) => {
+        $(item).css('height', height);
+      });
+
+      for (let i = 0; i < repeatNumber; i ++) {
+        $container.append($items.clone());
+      }
+
+      let index = 0;
+      let stopValue = getStopValue(index);
+      function move(moveValue) {
+        $container.css('transform', 'translateY(' + moveValue + 'px)');
+      }
+      function getStopValue(index) {
+        return - height * moveSize * (index + 1);
+      }
+      function complete() {
+        console.log(index)
+        if (index < resetIndex) {
+          start(getStopValue(index), getStopValue(++ index));
+        }
+      }
+      
+      function start(beginValue, endValue) {
+        let count = 0;
+        const total = 500;
+        const step = (endValue - beginValue) / total;
+        function animate() {
+          if (count >= total) {
+            count = 0;
+            complete();
+          } else {
+            move(beginValue);
+            count ++;
+            beginValue = beginValue + step;
+            requestAnimationFrame(animate);
+          }
+        }
+        requestAnimationFrame(animate);
+      }
+      start(0, stopValue);
+    </script>
+  </body>
+</html>
